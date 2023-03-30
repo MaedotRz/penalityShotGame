@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <div id="forHeader1">
+        <img id="ball" src="./assets/football.png" alt="">
+        <img id="goalKeeper" src="./assets/character_boy.png" alt="">
+    </div>
+    <div id="goalStatus"></div>
+    <div id="point">0</div>
+    <audio src="" id="sounds" autoplay></audio>
+    <audio src="./assets/BG.mp3"></audio>
+</body>
+<script>
+    const ball = document.getElementById('ball')
+    const goalKeeper = document.getElementById('goalKeeper')
+    const goalStatus = document.getElementById('goalStatus')
+    const sounds = document.getElementById('sounds')
+    const point = document.getElementById('point')
+    let counter = 0
+
+
+    window.onclick = (e) => {
+        document.getElementsByTagName('audio')[1].play()
+        saveGoal()
+        let left = 680
+        let top = 550
+        ball.style.left = e.clientX - 40 + 'px'
+        ball.style.top = e.clientY - 40 + 'px'
+        sounds.src = './assets/kickBall.mp3'
+
+        setTimeout(() => { checkGoal(e.clientX, e.clientY) }, 500);
+
+        setTimeout(() => { resetPos(left, top) }, 2000);
+    }
+    function saveGoal(params) {
+        let posX = randomGoaliePos().randomX - 60
+        let posY = randomGoaliePos().randomY - 60
+        goalKeeper.style.left = posX + 'px'
+        goalKeeper.style.top = posY + 'px'
+        goalKeeper.style.animation = 'none'
+        if (posX < (885 + 260) / 2) {
+            goalKeeper.style.transform = 'rotate(-90deg)'
+        } else {
+            goalKeeper.style.transform = 'rotate(90deg)'
+        }
+    }
+    function randomGoaliePos(params) {
+        let randomX = 885 - Math.floor(Math.random() * (885 - 475))
+        let randomY = 260 - Math.floor(Math.random() * (260 - 78))
+        return { randomX, randomY }
+    }
+
+    function goalInfo(colr, text, audio) {
+        goalStatus.style.display = 'block'
+        goalStatus.style.animation = 'fadeOut 1s'
+        goalStatus.style.color = colr
+        goalStatus.innerText = text
+        sounds.src = audio
+        setTimeout(() => {
+            goalStatus.style.display = 'none'
+        }, 1000);
+    }
+
+    function checkGoal(ballPosX, ballPosY) {
+        if (ballPosX < 885 && ballPosX > 475 && ballPosY < 260 && ballPosY > 78) {
+            if (ballPosX > Number(goalKeeper.style.left.split('p')[0]) && ballPosX < (Number(goalKeeper.style.left.split('p')[0]) + 150)) {
+                goalInfo('red', 'MISS', './assets/miss.mp3')
+                ball.style.top = '350px'
+                counter--
+                point.innerText = counter
+
+            }
+            else {
+                goalInfo('white', 'GOAL', './assets/goal.mp3')
+                counter++
+                point.innerText = counter
+                ball.style.top = '150px'
+
+            }
+        } else {
+            goalInfo('red', 'MISS', './assets/miss.mp3')
+            counter--
+            point.innerText = counter
+
+        }
+        goalKeeper.style.top = '150px'
+
+    }
+    function resetPos(left, top) {
+        ball.style.left = left + 'px'
+        ball.style.top = top + 'px'
+        goalKeeper.style.top = '150px'
+        goalKeeper.style.left = '450px'
+        goalKeeper.style.animation = 'moveGoalie 1.5s infinite alternate ease-in-out'
+        goalKeeper.style.transform = 'rotate(0deg)'
+
+    }
+</script>
+<style>
+    body {
+        background: url('./assets/football_field.png') no-repeat;
+        background-size: cover;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        font-weight: bold;
+    }
+
+    #ball {
+        position: absolute;
+        left: 680px;
+        top: 550px;
+        width: 6vw;
+        transition: .5s;
+    }
+
+    #goalKeeper {
+        position: absolute;
+        left: 450px;
+        top: 150px;
+        width: 120px;
+        animation: moveGoalie 1.5s infinite alternate ease-in-out;
+        transition: .5s;
+        /* -webkit-box-reflect: below 0px linear-gradient(to bottom, rgba(0,0,0,0.0), rgba(0,0,0,0.4)); */
+    }
+
+    #goalStatus {
+        position: absolute;
+        left: 41%;
+        top: 40%;
+        color: white;
+        font-size: 6vw;
+        display: none;
+    }
+
+    #point {
+        position: absolute;
+        top: 0;
+        left: 5%;
+        font-size: 3vw;
+        color: white;
+
+    }
+
+    @keyframes fadeOut {
+        0% {
+            opacity: 1;
+        }
+
+        100% {
+            opacity: 0;
+            top: 30%;
+
+        }
+    }
+
+    @keyframes moveGoalie {
+        0% {
+            left: 450px;
+        }
+
+        100% {
+            left: 750px;
+        }
+    }
+</style>
+
+</html>
